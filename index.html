@@ -536,6 +536,8 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     const notification = document.getElementById('notification');
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const notificationDuration = isMobile ? 4000 : 2500;
     
     function showNotification(message) {
       notification.textContent = message;
@@ -543,7 +545,7 @@
       
       setTimeout(() => {
         notification.classList.remove('show');
-      }, 2500);
+      }, notificationDuration);
     }
 
     const contactItems = document.querySelectorAll('.contact-item');
