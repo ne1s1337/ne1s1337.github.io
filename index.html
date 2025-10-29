@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>netaudi — contacts</title>
+  <meta name="description" content="netaudi: Telegram, email, GitHub." />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cg fill='none' stroke='%2300ff9c' stroke-width='6'%3E%3Ccircle cx='28' cy='64' r='20'/%3E%3Ccircle cx='52' cy='64' r='20'/%3E%3Ccircle cx='76' cy='64' r='20'/%3E%3Ccircle cx='100' cy='64' r='20'/%3E%3C/g%3E%3Cpath d='M16 110 L112 18' stroke='%23ff0055' stroke-width='8'/%3E%3C/svg%3E" />
+
+  <style>
+    :root{
+      --bg: #000000;
+      --fg: #00ff9c;
+      --muted: #6b7280;
+      --accent: #ff0055;
+      --glow: #00ff9c;
+      --mono: 'Courier New', Courier, monospace;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body { 
+      height: 100%; 
+      overflow: hidden;
+    }
+    
+    body{
+      background: var(--bg);
+      color: var(--fg);
+      font: 15px/1.6 var(--mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: min(720px, 92vw);
+      animation: glitch-container 4s infinite;
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.08),
+        rgba(0, 0, 0, 0.08) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      z-index: 999;
+      animation: scanlines-move 8s linear infinite;
+      border-radius: 8px;
+      opacity: 0.6;
+    }
+    
+    @keyframes scanlines-move {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(6px); }
+    }
+    
+    .container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.015;
+      pointer-events: none;
+      z-index: 998;
+      animation: noise-anim 0.4s steps(3) infinite;
+      border-radius: 8px;
+      mix-blend-mode: overlay;
+    }
+    
+    @keyframes noise-anim {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(-0.5%, -0.5%); }
+      66% { transform: translate(0.5%, 0.5%); }
+    }
+    
+    @keyframes glitch-container {
+      0%, 88%, 100% { transform: translate(0, 0); }
+      89% { transform: translate(-3px, 2px); }
+      90% { transform: translate(3px, -2px); }
+      91% { transform: translate(-2px, -1px); }
+      92% { transform: translate(0, 0); }
+    }
+
+    .logo-wrapper {
+      text-align: center;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 25px rgba(0, 255, 156, 0.5));
+      animation: logo-pulse 4s ease-in-out infinite;
+    }
+    
+    @keyframes logo-pulse {
+      0%, 100% { filter: drop-shadow(0 0 25px rgba(0, 255, 156, 0.5)); }
+      50% { filter: drop-shadow(0 0 35px rgba(0, 255, 156, 0.7)); }
+    }
+    
+    .audi-logo svg {
+      width: 240px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .terminal {
+      background: rgba(0, 0, 0, 0.88);
+      border: 2px solid var(--fg);
+      border-radius: 8px;
+      padding: 18px 22px;
+      box-shadow: 
+        0 0 50px rgba(0, 255, 156, 0.25),
+        inset 0 0 80px rgba(0, 255, 156, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .terminal::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      background: linear-gradient(45deg, var(--fg), var(--accent), var(--fg));
+      opacity: 0.35;
+      filter: blur(10px);
+      z-index: -1;
+      animation: glow-pulse 2.5s ease-in-out infinite;
+    }
+    
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 0.45; }
+    }
+
+    .terminal-header {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      opacity: 0.7;
+    }
+
+    .prompt-line {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      animation: text-glitch 0.25s infinite;
+      font-size: 14px;
+    }
+    
+    @keyframes text-glitch {
+      0%, 85%, 100% { 
+        text-shadow: 0 0 5px var(--glow); 
+      }
+      87%, 92% { 
+        text-shadow: 2px 0 5px var(--accent), -2px 0 5px #00ffff; 
+      }
+    }
+    
+    .prompt {
+      color: var(--fg);
+      text-shadow: 0 0 8px var(--glow);
+    }
+    
+    .path {
+      color: #6ee7b7;
+    }
+    
+    .command {
+      color: #fbbf24;
+      margin-left: 8px;
+    }
+
+    .output {
+      margin: 10px 0;
+      padding-left: 4px;
+      min-height: 80px;
+      color: var(--fg);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+    
+    .output-line {
+      margin: 2px 0;
+    }
+    
+    .encrypted {
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    
+    .decrypted {
+      color: var(--fg);
+      text-shadow: 0 0 8px var(--glow);
+    }
+    
+    .cracking {
+      animation: crack-effect 0.1s infinite;
+    }
+    
+    @keyframes crack-effect {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 16px;
+      background: var(--fg);
+      margin-left: 4px;
+      animation: blink 0.9s step-end infinite;
+      box-shadow: 0 0 12px var(--glow);
+    }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .contacts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .contact-item {
+      background: rgba(0, 255, 156, 0.05);
+      border: 1px solid rgba(0, 255, 156, 0.3);
+      padding: 16px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .contact-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 156, 0.3), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .contact-item:hover {
+      border-color: var(--fg);
+      background: rgba(0, 255, 156, 0.12);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 20px rgba(0, 255, 156, 0.4);
+    }
+    
+    .contact-item:hover::before {
+      left: 100%;
+    }
+    
+    .contact-item:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .contact-item.decrypting {
+      animation: decrypt-shake 0.1s infinite;
+      border-color: var(--accent);
+      box-shadow: 0 0 30px rgba(255, 0, 85, 0.6);
+    }
+    
+    @keyframes decrypt-shake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 2px); }
+      50% { transform: translate(2px, -2px); }
+      75% { transform: translate(-2px, -2px); }
+    }
+    
+    .contact-item.decrypted {
+      animation: decrypt-success 0.5s ease;
+      border-color: var(--fg);
+      box-shadow: 0 0 40px rgba(0, 255, 156, 0.8);
+    }
+    
+    @keyframes decrypt-success {
+      0% { 
+        transform: scale(1);
+        box-shadow: 0 0 40px rgba(0, 255, 156, 0.8);
+      }
+      50% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 60px rgba(0, 255, 156, 1);
+      }
+      100% { 
+        transform: scale(1);
+        box-shadow: 0 0 40px rgba(0, 255, 156, 0.8);
+      }
+    }
+
+    .contact-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+      filter: drop-shadow(0 0 10px var(--glow));
+      transition: transform 0.3s ease;
+    }
+    
+    .contact-item:hover .contact-icon {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 15px var(--glow));
+    }
+
+    .contact-title {
+      color: var(--fg);
+      font-weight: bold;
+      font-size: 14px;
+      text-shadow: 0 0 5px var(--glow);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 12px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 10px;
+      z-index: 10;
+      text-shadow: 0 0 5px rgba(0, 255, 156, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      
+      .container {
+        width: 94vw;
+      }
+      
+      .audi-logo svg {
+        width: 180px;
+      }
+      
+      .logo-wrapper {
+        margin-bottom: 16px;
+      }
+      
+      .contacts {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .terminal {
+        padding: 14px 16px;
+      }
+      
+      .output {
+        font-size: 12px;
+        min-height: 100px;
+      }
+      
+      .prompt-line {
+        font-size: 12px;
+      }
+      
+      .contact-item {
+        padding: 18px 12px;
+      }
+      
+      .contact-icon {
+        font-size: 28px;
+      }
+      
+      footer {
+        position: relative;
+        margin-top: 12px;
+        bottom: auto;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .audi-logo svg {
+        width: 160px;
+      }
+      
+      .output {
+        font-size: 11px;
+      }
+      
+      .terminal-header {
+        font-size: 9px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-wrapper">
+      <div class="audi-logo">
+        <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <style>
+              .ring { fill: none; stroke: #00ff9c; stroke-width: 12; }
+            </style>
+          </defs>
+          <g>
+            <circle class="ring" cx="60" cy="60" r="42" />
+            <circle class="ring" cx="128" cy="60" r="42" />
+            <circle class="ring" cx="196" cy="60" r="42" />
+            <circle class="ring" cx="264" cy="60" r="42" />
+          </g>
+          <line x1="10" y1="105" x2="314" y2="15" stroke="#ff0055" stroke-width="12" stroke-linecap="round" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-header">// netaudi — secure terminal v2.2.8</div>
+      
+      <div class="prompt-line">
+        <span class="prompt">root@netaudi</span>:<span class="path">~</span>$<span class="command">cat contacts.enc</span>
+      </div>
+      
+      <div class="output" id="output">
+        <div class="output-line">[OK] Loading encrypted database...</div>
+        <div class="output-line">[OK] Initializing decryption protocols...</div>
+        <div class="output-line"></div>
+        <div class="output-line encrypted" id="line-tg">TELEGRAM    : ██████████████</div>
+        <div class="output-line encrypted" id="line-email">EMAIL       : ██████████████████</div>
+        <div class="output-line encrypted" id="line-gh">GITHUB      : ██████████████████</div>
+        <div class="output-line"></div>
+        <div class="output-line">[WAIT] Click on icons to decrypt and access</div>
+      </div>
+      
+      <div class="prompt-line">
+        <span class="prompt">root@netaudi</span>:<span class="path">~</span>$<span class="cursor"></span>
+      </div>
+
+      <div class="contacts">
+        <div class="contact-item" data-type="telegram" data-value="https://t.me/netaudi" data-line="line-tg" data-text="@netaudi">
+          <span class="contact-icon">💬</span>
+          <div class="contact-title">Telegram</div>
+        </div>
+
+        <div class="contact-item" data-type="email" data-value="netaudi@proton.me" data-line="line-email" data-text="netaudi@proton.me">
+          <span class="contact-icon">✉</span>
+          <div class="contact-title">Email</div>
+        </div>
+
+        <div class="contact-item" data-type="github" data-value="https://github.com/netaudi" data-line="line-gh" data-text="github.com/netaudi">
+          <span class="contact-icon">💻</span>
+          <div class="contact-title">GitHub</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © <span id="year"></span> netaudi — luke 14:11
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const decryptedItems = new Set();
+
+    const contactItems = document.querySelectorAll('.contact-item');
+    
+    contactItems.forEach(item => {
+      item.addEventListener('click', function() {
+        if (this.classList.contains('decrypting') || this.classList.contains('decrypted')) {
+          return;
+        }
+
+        const type = this.dataset.type;
+        const value = this.dataset.value;
+        const lineId = this.dataset.line;
+        const realText = this.dataset.text;
+        const line = document.getElementById(lineId);
+        
+        this.classList.add('decrypting');
+        line.classList.add('cracking');
+        
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@._-/#';
+        const prefix = line.textContent.split(':')[0] + '    : ';
+        let attempts = 0;
+        const maxAttempts = 20;
+        
+        const crackInterval = setInterval(() => {
+          let crackedText = '';
+          for (let i = 0; i < realText.length; i++) {
+            if (Math.random() > 0.3) {
+              crackedText += chars[Math.floor(Math.random() * chars.length)];
+            } else {
+              crackedText += realText[i];
+            }
+          }
+          line.textContent = prefix + crackedText;
+          attempts++;
+          
+          if (attempts >= maxAttempts) {
+            clearInterval(crackInterval);
+            
+            line.textContent = prefix + realText;
+            line.classList.remove('encrypted', 'cracking');
+            line.classList.add('decrypted');
+            
+            this.classList.remove('decrypting');
+            this.classList.add('decrypted');
+            
+            decryptedItems.add(type);
+            
+            setTimeout(() => {
+              if (type === 'email') {
+                navigator.clipboard.writeText(value).then(() => {
+                  console.log('[OK] Email copied to clipboard');
+                }).catch(() => {
+                  console.log('[OK] Email: ' + value);
+                });
+              } else {
+                window.open(value, '_blank', 'noopener,noreferrer');
+              }
+            }, 300);
+          }
+        }, 50);
+      });
+    });
+  </script>
+</body>
+</html>
