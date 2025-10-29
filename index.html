@@ -38,6 +38,7 @@
       padding: 20px 0;
     }
 
+    /* Основной контент */
     .container {
       position: relative;
       z-index: 10;
@@ -45,6 +46,7 @@
       animation: glitch-container 4s infinite;
     }
     
+    /* Тонкие CRT эффекты только внутри контейнера */
     .container::before {
       content: '';
       position: absolute;
@@ -95,6 +97,7 @@
       92% { transform: translate(0, 0); }
     }
 
+    /* Компактный логотип Audi */
     .logo-wrapper {
       text-align: center;
       margin-bottom: 20px;
@@ -114,6 +117,7 @@
       margin: 0 auto;
     }
 
+    /* Компактный терминал */
     .terminal {
       background: rgba(0, 0, 0, 0.88);
       border: 2px solid var(--fg);
@@ -229,6 +233,7 @@
       51%, 100% { opacity: 0; }
     }
 
+    /* Компактные контакты */
     .contacts {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -328,6 +333,7 @@
       text-shadow: 0 0 5px var(--glow);
     }
 
+    /* Футер */
     footer {
       position: fixed;
       bottom: 12px;
@@ -340,6 +346,7 @@
       text-shadow: 0 0 5px rgba(0, 255, 156, 0.5);
     }
 
+    /* Адаптивность */
     @media (max-width: 768px) {
       html, body {
         height: auto;
@@ -428,7 +435,7 @@
   <div class="container">
     <div class="logo-wrapper">
       <div class="audi-logo">
-        <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 324 120" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <style>
               .ring { fill: none; stroke: #00ff9c; stroke-width: 12; }
@@ -440,7 +447,7 @@
             <circle class="ring" cx="196" cy="60" r="42" />
             <circle class="ring" cx="264" cy="60" r="42" />
           </g>
-          <line x1="10" y1="105" x2="314" y2="15" stroke="#ff0055" stroke-width="12" stroke-linecap="round" />
+          <line x1="12" y1="98" x2="312" y2="22" stroke="#ff0055" stroke-width="12" stroke-linecap="round" />
         </svg>
       </div>
     </div>
@@ -458,7 +465,7 @@
         <div class="output-line"></div>
         <div class="output-line encrypted" id="line-tg">TELEGRAM    : ██████████████</div>
         <div class="output-line encrypted" id="line-email">EMAIL       : ██████████████████</div>
-        <div class="output-line encrypted" id="line-gh">      : ██████████████████</div>
+        <div class="output-line encrypted" id="line-gh">GITHUB      : ██████████████████</div>
         <div class="output-line"></div>
         <div class="output-line">[WAIT] Click on icons to decrypt and access</div>
       </div>
@@ -487,7 +494,7 @@
   </div>
 
   <footer>
-    © <span id="year"></span> netaudi — encrypted communications only
+    © <span id="year"></span> netaudi — luke 14:11
   </footer>
 
   <script>
@@ -495,6 +502,7 @@
 
     const decryptedItems = new Set();
 
+    // Обработка кликов на контакты
     const contactItems = document.querySelectorAll('.contact-item');
     
     contactItems.forEach(item => {
@@ -509,9 +517,11 @@
         const realText = this.dataset.text;
         const line = document.getElementById(lineId);
         
+        // Анимация расшифровки
         this.classList.add('decrypting');
         line.classList.add('cracking');
         
+        // Имитация взлома с подбором символов
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@._-/#';
         const prefix = line.textContent.split(':')[0] + '    : ';
         let attempts = 0;
@@ -532,6 +542,7 @@
           if (attempts >= maxAttempts) {
             clearInterval(crackInterval);
             
+            // Финальная расшифровка
             line.textContent = prefix + realText;
             line.classList.remove('encrypted', 'cracking');
             line.classList.add('decrypted');
@@ -541,6 +552,7 @@
             
             decryptedItems.add(type);
             
+            // Открываем ссылку или копируем
             setTimeout(() => {
               if (type === 'email') {
                 navigator.clipboard.writeText(value).then(() => {
