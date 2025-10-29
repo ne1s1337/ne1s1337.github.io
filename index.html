@@ -199,6 +199,102 @@
       margin: 2px 0;
     }
     
+    .crypto-info {
+      animation: crypto-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes crypto-glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; text-shadow: 0 0 8px var(--glow); }
+      50% { opacity: 0.5; text-shadow: 0 0 4px var(--glow); }
+    }
+    
+    .news-ticker {
+      background: rgba(0, 255, 156, 0.05);
+      border: 1px solid rgba(0, 255, 156, 0.2);
+      border-radius: 4px;
+      padding: 6px 8px;
+      margin: 8px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      font-size: 11px;
+      color: #6ee7b7;
+    }
+    
+    .news-ticker-content {
+      display: inline-block;
+      padding-left: 100%;
+      animation: ticker 30s linear infinite;
+    }
+    
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    .counter {
+      display: inline-block;
+      min-width: 30px;
+      text-align: center;
+      color: var(--fg);
+      font-weight: bold;
+      text-shadow: 0 0 8px var(--glow);
+    }
+    
+    .skill-bar {
+      margin: 4px 0;
+      font-size: 11px;
+    }
+    
+    .skill-bar-fill {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--fg), rgba(0, 255, 156, 0.3));
+      height: 8px;
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(0, 255, 156, 0.5);
+      animation: fillBar 2s ease-out;
+    }
+    
+    @keyframes fillBar {
+      from { width: 0; }
+    }
+    
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.03;
+    }
+    
+    .crypto-chart {
+      font-family: monospace;
+      white-space: pre;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+    
+    .crypto-chart::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    .crypto-chart::-webkit-scrollbar-track {
+      background: rgba(0, 255, 156, 0.1);
+    }
+    
+    .crypto-chart::-webkit-scrollbar-thumb {
+      background: var(--fg);
+      border-radius: 2px;
+    }
+    
     .encrypted {
       color: var(--muted);
       letter-spacing: 1px;
@@ -465,6 +561,8 @@
   </style>
 </head>
 <body>
+  <canvas class="matrix-bg" id="matrix"></canvas>
+  
   <div class="container">
     <div class="logo-wrapper">
       <div class="audi-logo">
@@ -500,6 +598,21 @@
         <div class="output-line encrypted" id="line-email">EMAIL       : ██████████████████</div>
         <div class="output-line encrypted" id="line-gh">GITHUB      : ██████████████████</div>
         <div class="output-line"></div>
+        <div class="output-line" style="color: #00ff9c;"><span id="status-dot" style="animation: pulse 2s infinite;">●</span> SYSTEM ONLINE</div>
+        <div class="output-line crypto-info" style="color: #fbbf24;" id="market-line">[MARKET] Loading...</div>
+        <div class="output-line crypto-info" style="color: #8b5cf6;">[STATS] Airdrops: <span class="counter" id="airdrop-counter">47</span>+ • ROI: 340% • Active: 1 (Grass)</div>
+        
+        <div class="news-ticker">
+          <div class="news-ticker-content" id="news-ticker">
+            💻 Web3/Blockchain Development • ⚡ Smart Contract Auditing • 🎯 DeFi Protocol Expert • 🪂 Airdrop Hunter (47+ claimed) • 🔐 Security Best Practices • 📊 On-chain Analytics • 🚀 Layer 2 Solutions Specialist
+          </div>
+        </div>
+        
+        <div class="output-line crypto-chart" id="chart" style="color: #00ff9c; font-size: 10px; line-height: 1.2; margin-top: 4px;"></div>
+        <div class="output-line"></div>
+        <div class="output-line" id="typing-text"></div>
+      </div>
+        <div class="output-line"></div>
         <div class="output-line">[WAIT] Click on icons to decrypt and access</div>
       </div>
       
@@ -534,6 +647,21 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Загрузка цены BTC
+    async function fetchBTCPrice() {
+      try {
+        const response = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+        const data = await response.json();
+        const price = parseFloat(data.price).toFixed(2);
+        document.getElementById('btc-price').textContent = `${price.toLocaleString()}`;
+      } catch (error) {
+        document.getElementById('btc-price').textContent = 'Market data unavailable';
+      }
+    }
+    
+    fetchBTCPrice();
+    setInterval(fetchBTCPrice, 30000); // Обновление каждые 30 секунд
 
     const notification = document.getElementById('notification');
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
